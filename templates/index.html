@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Campus Compass — JEE College Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08090c;
+  --surface:#10121a;
+  --card:#161924;
+  --card2:#1d2130;
+  --border:#252a3a;
+  --accent:#f0c040;
+  --accent2:#e07a30;
+  --green:#3dd68c;
+  --red:#f05070;
+  --blue:#5898f0;
+  --text:#e8eaf0;
+  --muted:#7a8099;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,9,12,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;display:flex;align-items:center;gap:2rem;height:64px;
+}
+.logo{font-family:var(--font-display);font-size:1.8rem;letter-spacing:.05em;color:var(--accent);white-space:nowrap}
+.logo span{color:var(--accent2)}
+nav{display:flex;gap:.25rem;flex:1;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.nav-btn{
+  background:none;border:none;cursor:pointer;font-family:var(--font-body);
+  font-size:.8rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);padding:.5rem 1rem;border-radius:6px;white-space:nowrap;
+  transition:all .2s;
+}
+.nav-btn:hover{color:var(--text);background:var(--card)}
+.nav-btn.active{color:var(--accent);background:rgba(240,192,64,.1)}
+
+main{max-width:1400px;margin:0 auto;padding:2rem;position:relative;z-index:1}
+
+.section{display:none;animation:fadeIn .3s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.page-title{
+  font-family:var(--font-display);font-size:3.5rem;letter-spacing:.04em;
+  line-height:1;margin-bottom:.5rem;
+}
+.page-title span{color:var(--accent)}
+.page-sub{color:var(--muted);font-size:.95rem;margin-bottom:2rem;font-weight:300}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-group label{font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.form-group input,.form-group select{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.9rem;
+  transition:border-color .2s;outline:none;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.form-group select option{background:var(--card2)}
+.form-group.full{grid-column:1/-1}
+
+.weights-section{
+  margin-top:1.5rem;padding:1.5rem;background:var(--card);
+  border-radius:12px;border:1px solid var(--border);
+}
+.weights-title{font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.weights-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+.weight-item{display:flex;flex-direction:column;gap:.4rem}
+.weight-label{display:flex;justify-content:space-between;align-items:center}
+.weight-label span:first-child{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.weight-val{font-family:var(--font-mono);font-size:.78rem;color:var(--accent)}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:4px;border-radius:2px;
+  background:var(--border);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--accent);cursor:pointer;
+}
+
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.8rem;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--font-body);font-size:.9rem;font-weight:500;
+  transition:all .2s;text-decoration:none;
+}
+.btn-primary{background:var(--accent);color:#08090c}
+.btn-primary:hover{background:#f8d060;transform:translateY(-1px)}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text)}
+.form-actions{display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap}
+
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.results-count{font-family:var(--font-mono);font-size:.85rem;color:var(--muted)}
+.results-count span{color:var(--accent);font-weight:500}
+
+.results-grid{display:flex;flex-direction:column;gap:.75rem}
+.result-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:1.25rem 1.5rem;display:grid;
+  grid-template-columns:2rem 1fr auto;gap:1rem;align-items:center;
+  transition:border-color .2s,transform .15s;cursor:pointer;
+}
+.result-card:hover{border-color:var(--accent);transform:translateX(3px)}
+.result-card.excellent{border-left:3px solid var(--green)}
+.result-card.good{border-left:3px solid var(--blue)}
+.result-card.fair{border-left:3px solid var(--accent)}
+.result-card.stretch{border-left:3px solid var(--muted)}
+
+.result-rank{font-family:var(--font-display);font-size:1.4rem;color:var(--muted)}
+.result-info{}
+.result-name{font-weight:600;font-size:1rem;margin-bottom:.3rem}
+.result-meta{display:flex;flex-wrap:wrap;gap:.5rem}
+.tag{
+  font-size:.7rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--muted);
+}
+.tag.iit{background:rgba(240,192,64,.15);color:var(--accent)}
+.tag.nit{background:rgba(88,152,240,.15);color:var(--blue)}
+.tag.iiit{background:rgba(61,214,140,.15);color:var(--green)}
+.tag.bits{background:rgba(224,122,48,.15);color:var(--accent2)}
+.tag.branch{background:rgba(240,80,112,.15);color:var(--red)}
+
+.result-stats{text-align:right}
+.score-big{font-family:var(--font-display);font-size:2rem;letter-spacing:.03em;line-height:1}
+.score-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem}
+.verdict{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:20px}
+.verdict.excellent{background:rgba(61,214,140,.15);color:var(--green)}
+.verdict.good{background:rgba(88,152,240,.15);color:var(--blue)}
+.verdict.fair{background:rgba(240,192,64,.15);color:var(--accent)}
+.verdict.stretch{background:rgba(122,128,153,.15);color:var(--muted)}
+
+.result-detail{
+  display:none;background:var(--card2);border-radius:0 0 12px 12px;
+  padding:1rem 1.5rem;margin-top:-12px;border:1px solid var(--border);
+  border-top:none;
+}
+.result-detail.open{display:block}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem}
+.detail-item{display:flex;flex-direction:column;gap:.2rem}
+.detail-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.detail-value{font-family:var(--font-mono);font-size:.9rem;color:var(--text)}
+
+.compare-picker{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.compare-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}
+.compare-table th{background:var(--card2);padding:.75rem 1rem;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.compare-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.9rem}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table .metric-col{color:var(--muted);font-size:.8rem}
+.compare-winner{color:var(--green);font-weight:600}
+.compare-loser{color:var(--muted)}
+.vs-divider{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:3rem;color:var(--border);
+}
+
+.explore-table{width:100%;border-collapse:collapse}
+.explore-table th{
+  position:sticky;top:0;background:var(--surface);z-index:5;
+  padding:.6rem 1rem;text-align:left;font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--muted);border-bottom:1px solid var(--border);cursor:pointer;
+}
+.explore-table th:hover{color:var(--text)}
+.explore-table th.sorted{color:var(--accent)}
+.explore-table td{padding:.65rem 1rem;font-size:.85rem;border-bottom:1px solid var(--border)}
+.explore-table tr:hover td{background:var(--card)}
+.nirf-badge{
+  display:inline-block;width:32px;height:32px;border-radius:50%;
+  background:var(--card2);border:1px solid var(--border);
+  font-family:var(--font-mono);font-size:.72rem;font-weight:500;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.star-bar{display:flex;gap:2px;align-items:center}
+.star-fill{height:4px;border-radius:2px;background:var(--accent);transition:width .5s}
+
+.cutoff-controls{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:flex-end}
+.cutoff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}
+.cutoff-card{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:1rem;text-align:center;
+}
+.cutoff-branch{font-family:var(--font-display);font-size:1.4rem;letter-spacing:.05em;color:var(--accent)}
+.cutoff-rank{font-family:var(--font-mono);font-size:1.1rem;margin:.25rem 0;color:var(--text)}
+.cutoff-na{color:var(--muted);font-size:.8rem}
+
+.search-wrap{position:relative;max-width:540px}
+.search-input{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:.85rem 1.1rem;color:var(--text);font-family:var(--font-body);font-size:1rem;
+  outline:none;transition:border-color .2s;
+}
+.search-input:focus{border-color:var(--accent)}
+.suggestions{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;z-index:50;display:none;box-shadow:0 16px 40px rgba(0,0,0,.5);
+}
+.suggestions.open{display:block}
+.suggestion-item{
+  padding:.75rem 1.1rem;cursor:pointer;font-size:.9rem;transition:background .15s;
+  border-bottom:1px solid var(--border);
+}
+.suggestion-item:last-child{border-bottom:none}
+.suggestion-item:hover{background:var(--card);color:var(--accent)}
+.suggestion-item mark{background:rgba(240,192,64,.25);color:var(--accent);border-radius:2px}
+
+.hero{
+  text-align:center;padding:4rem 2rem 3rem;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(240,192,64,.06) 0%, transparent 70%);
+  border-radius:16px;margin-bottom:2rem;
+}
+.hero-title{font-family:var(--font-display);font-size:clamp(3rem,8vw,6rem);letter-spacing:.04em;line-height:1}
+.hero-title span{color:var(--accent)}
+.hero-sub{max-width:500px;margin:.75rem auto 2rem;color:var(--muted);font-size:1rem;font-weight:300;line-height:1.6}
+.hero-stats{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;margin-top:2rem}
+.hero-stat{text-align:center}
+.hero-stat-num{font-family:var(--font-display);font-size:2.5rem;color:var(--accent)}
+.hero-stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+.chip-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.chip{
+  padding:.35rem .9rem;border-radius:20px;font-size:.78rem;font-weight:500;
+  border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;
+  transition:all .2s;
+}
+.chip:hover,.chip.active{background:rgba(240,192,64,.12);border-color:var(--accent);color:var(--accent)}
+
+.spinner{
+  display:inline-block;width:20px;height:20px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{
+  display:none;position:fixed;inset:0;background:rgba(8,9,12,.7);
+  backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:1rem;
+}
+.loading-overlay.show{display:flex}
+.loading-text{font-family:var(--font-display);font-size:1.5rem;letter-spacing:.05em;color:var(--accent)}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:300;
+  background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  padding:.85rem 1.5rem;font-size:.9rem;transform:translateY(120%);
+  transition:transform .3s;max-width:320px;
+}
+.toast.show{transform:none}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+@media(max-width:680px){
+  .compare-picker{grid-template-columns:1fr}
+  .result-card{grid-template-columns:2rem 1fr}
+  .result-stats{grid-column:1/-1;text-align:left}
+  .page-title{font-size:2.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner" style="width:40px;height:40px;border-width:3px"></div>
+  <div class="loading-text">Crunching your profile…</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<header>
+  <div class="logo">Campus<span>Compass</span></div>
+  <nav>
+    <button class="nav-btn active" data-section="home">Home</button>
+    <button class="nav-btn" data-section="recommend">Recommend</button>
+    <button class="nav-btn" data-section="compare">Compare</button>
+    <button class="nav-btn" data-section="explore">Explore</button>
+    <button class="nav-btn" data-section="cutoffs">Cutoff Explorer</button>
+    <button class="nav-btn" data-section="search">College Search</button>
+  </nav>
+</header>
+
+<main>
+
+<div class="section active" id="sec-home">
+  <div class="hero">
+    <div class="hero-title">Find Your <span>Dream</span><br>College</div>
+    <div class="hero-sub">AI-powered JEE college recommendations with branch-wise cutoffs, Dijkstra routing, Segment Tree fee queries &amp; Trie search.</div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="goSection('recommend')">Get Recommendations →</button>
+      <button class="btn btn-secondary" onclick="goSection('explore')">Browse All Colleges</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num" id="statColleges">0</div><div class="hero-stat-label">Colleges</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">10+</div><div class="hero-stat-label">IITs</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">4+</div><div class="hero-stat-label">NITs</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">6</div><div class="hero-stat-label">Algorithms Used</div></div>
+    </div>
+  </div>
+  <div style="padding:1rem 0">
+    <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1rem">Algorithms powering this app</div>
+    <div class="chip-row">
+      <span class="chip active"> Merge Sort — College Ranking</span>
+      <span class="chip active"> Dijkstra — Distance Estimation</span>
+      <span class="chip active"> Trie — College Autocomplete</span>
+      <span class="chip active">Segment Tree — Cheapest Fee Query</span>
+      <span class="chip active"> Weighted Scoring — Recommendations</span>
+      <span class="chip active"> Branch-wise Cutoffs — Eligibility</span>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="sec-recommend">
+  <div class="page-title">Get <span>Recommendations</span></div>
+  <div class="page-sub">Enter your exam scores and preferences — we'll rank the best-fit colleges for you.</div>
+
+  <div class="form-grid" id="profileForm">
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="f-name" placeholder="e.g. Arjun Sharma"/>
+    </div>
+    <div class="form-group">
+      <label>JEE Main Rank</label>
+      <input type="number" id="f-jeeMain" placeholder="0 = not appeared" min="0"/>
+    </div>
+    <div class="form-group">
+      <label>JEE Advanced Rank</label>
+      <input type="number" id="f-jeeAdv" placeholder="0 = not appeared" min="0"/>
+    </div>
+    <div class="form-group">
+      <label>BITSAT Score</label>
+      <input type="number" id="f-bitsat" placeholder="0 = not appeared" min="0" max="450"/>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="f-category">
+        {% for c in categories %}<option value="{{c}}">{{c}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Gender</label>
+      <select id="f-gender">
+        <option value="MALE">Male</option>
+        <option value="FEMALE">Female (Supernumerary Eligible)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Home State</label>
+      <input type="text" id="f-homeState" placeholder="e.g. UP, Tamil Nadu, Delhi"/>
+    </div>
+    <div class="form-group">
+      <label>Preferred Branch</label>
+      <select id="f-branch">
+        <option value="">Any Branch</option>
+        {% for b in branches %}<option value="{{b}}">{{b}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Max Budget (Lakhs)</label>
+      <input type="number" id="f-budget" placeholder="0 = no limit" min="0"/>
+    </div>
+    <div class="form-group">
+      <label>Min Package (LPA)</label>
+      <input type="number" id="f-minPkg" placeholder="0 = no limit" min="0"/>
+    </div>
+    <div class="form-group">
+      <label>Your City</label>
+      <select id="f-city">
+        {% for idx, name in cities %}<option value="{{idx}}">{{name}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Top-K Results</label>
+      <select id="f-topk">
+        <option value="5">Top 5</option>
+        <option value="10" selected>Top 10</option>
+        <option value="15">Top 15</option>
+        <option value="20">Top 20</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="weights-section">
+    <div class="weights-title">Scoring Weights — adjust how important each factor is</div>
+    <div class="weights-grid">
+      <div class="weight-item">
+        <div class="weight-label"><span>NIRF Rank</span><span class="weight-val" id="wv-rank">0.20</span></div>
+        <input type="range" id="w-rank" min="0" max="1" step="0.05" value="0.20" oninput="updateWeight('rank',this.value)"/>
+      </div>
+      <div class="weight-item">
+        <div class="weight-label"><span>Avg Package</span><span class="weight-val" id="wv-package">0.25</span></div>
+        <input type="range" id="w-package" min="0" max="1" step="0.05" value="0.25" oninput="updateWeight('package',this.value)"/>
+      </div>
+      <div class="weight-item">
+        <div class="weight-label"><span>Low Fees</span><span class="weight-val" id="wv-fees">0.15</span></div>
+        <input type="range" id="w-fees" min="0" max="1" step="0.05" value="0.15" oninput="updateWeight('fees',this.value)"/>
+      </div>
+      <div class="weight-item">
+        <div class="weight-label"><span>Placement %</span><span class="weight-val" id="wv-placement">0.20</span></div>
+        <input type="range" id="w-placement" min="0" max="1" step="0.05" value="0.20" oninput="updateWeight('placement',this.value)"/>
+      </div>
+      <div class="weight-item">
+        <div class="weight-label"><span>Distance</span><span class="weight-val" id="wv-distance">0.10</span></div>
+        <input type="range" id="w-distance" min="0" max="1" step="0.05" value="0.10" oninput="updateWeight('distance',this.value)"/>
+      </div>
+      <div class="weight-item">
+        <div class="weight-label"><span>Infrastructure</span><span class="weight-val" id="wv-infra">0.10</span></div>
+        <input type="range" id="w-infra" min="0" max="1" step="0.05" value="0.10" oninput="updateWeight('infra',this.value)"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="getRecommendations()"> Find My Colleges</button>
+    <button class="btn btn-ghost" onclick="resetForm()">Reset</button>
+  </div>
+
+  <div id="rec-results" style="margin-top:2rem"></div>
+</div>
+
+<div class="section" id="sec-compare">
+  <div class="page-title">Compare <span>Colleges</span></div>
+  <div class="page-sub">Side-by-side comparison of any two colleges in the database.</div>
+  <div class="compare-picker">
+    <div class="form-group">
+      <label>College 1</label>
+      <select id="cmp-id1">
+        {% for col in colleges %}<option value="{{col.id}}">{{col.name}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>College 2</label>
+      <select id="cmp-id2">
+        {% for col in colleges %}<option value="{{col.id}}" {% if loop.index == 2 %}selected{% endif %}>{{col.name}}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="compareColleges()">Compare →</button>
+  <div id="cmp-result" style="margin-top:2rem"></div>
+</div>
+
+<div class="section" id="sec-explore">
+  <div class="page-title">Explore <span>All Colleges</span></div>
+  <div class="page-sub">Browse and sort all colleges. Powered by Merge Sort.</div>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center">
+    <span style="font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Sort by:</span>
+    <button class="btn btn-secondary btn-sm" onclick="loadExplore('rank')" id="sort-rank">NIRF Rank</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadExplore('package')" id="sort-package">Package</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadExplore('fees')" id="sort-fees">Fees</button>
+    <button class="btn btn-secondary btn-sm" onclick="loadExplore('placement')" id="sort-placement">Placement</button>
+    <div style="margin-left:auto;font-family:var(--font-mono);font-size:.75rem;color:var(--muted)" id="explore-algo">
+      Algorithm: Merge Sort O(n log n)
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="explore-table" id="explore-table">
+      <thead><tr>
+        <th>#</th><th>College</th><th>Type</th><th>City</th>
+        <th>NIRF</th><th>Avg Pkg (LPA)</th><th>Fees (L)</th><th>Placement %</th><th>Branches</th>
+      </tr></thead>
+      <tbody id="explore-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" id="sec-cutoffs">
+  <div class="page-title">Cutoff <span>Explorer</span></div>
+  <div class="page-sub">Branch-wise cutoff ranks for any college and category. Replacing old category-only view.</div>
+  <div class="cutoff-controls">
+    <div class="form-group">
+      <label>College</label>
+      <select id="cut-college">
+        {% for col in colleges %}<option value="{{col.id}}">{{col.name}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Exam Type</label>
+      <select id="cut-exam">
+        <option value="adv">JEE Advanced (IITs)</option>
+        <option value="main_hs">JEE Main — Home State</option>
+        <option value="main_os">JEE Main — Other State</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="cut-cat">
+        {% for c in categories %}<option value="{{c}}">{{c}}</option>{% endfor %}
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="loadCutoffs()">View Cutoffs</button>
+  </div>
+  <div id="cutoff-result"></div>
+</div>
+
+<div class="section" id="sec-search">
+  <div class="page-title">College <span>Search</span></div>
+  <div class="page-sub">Trie-based autocomplete — type any prefix to find colleges instantly.</div>
+  <div class="search-wrap" style="margin-bottom:2rem">
+    <input class="search-input" id="search-input" placeholder="Type college name prefix… e.g. IIT, NIT, BITS"
+           oninput="doAutocomplete(this.value)" autocomplete="off"/>
+    <div class="suggestions" id="suggestions"></div>
+  </div>
+  <div id="search-detail"></div>
+
+  <div style="margin-top:2rem">
+    <div style="font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem">
+      Segment Tree — Cheapest College Finder
+    </div>
+    <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem">
+      <div class="form-group">
+        <label>Min Index</label>
+        <input type="number" id="seg-l" value="0" min="0" style="width:100px"/>
+      </div>
+      <div class="form-group">
+        <label>Max Index</label>
+        <input type="number" id="seg-r" value="10" min="0" style="width:100px"/>
+      </div>
+      <button class="btn btn-secondary" onclick="segQuery()">Find Cheapest in Range</button>
+    </div>
+    <div id="seg-result"></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+
+const sections = document.querySelectorAll('.section');
+const navBtns  = document.querySelectorAll('.nav-btn');
+function goSection(id) {
+  sections.forEach(s => s.classList.remove('active'));
+  navBtns.forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelector(`[data-section="${id}"]`).classList.add('active');
+  if (id === 'explore') loadExplore('rank');
+}
+navBtns.forEach(b => b.addEventListener('click', () => goSection(b.dataset.section)));
+
+function updateWeight(key, val) {
+  document.getElementById('wv-'+key).textContent = parseFloat(val).toFixed(2);
+}
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast '+type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+
+function setLoading(on) {
+  document.getElementById('loadingOverlay').classList.toggle('show', on);
+}
+
+async function getRecommendations() {
+  const payload = {
+    name:            document.getElementById('f-name').value,
+    jee_main_rank:   +document.getElementById('f-jeeMain').value||0,
+    jee_adv_rank:    +document.getElementById('f-jeeAdv').value||0,
+    bitsat_score:    +document.getElementById('f-bitsat').value||0,
+    category:        document.getElementById('f-category').value,
+    gender:          document.getElementById('f-gender').value,
+    home_state:      document.getElementById('f-homeState').value,
+    preferred_branch:document.getElementById('f-branch').value,
+    budget_lakhs:    +document.getElementById('f-budget').value||0,
+    min_package:     +document.getElementById('f-minPkg').value||0,
+    city_id:         +document.getElementById('f-city').value,
+    top_k:           +document.getElementById('f-topk').value,
+    w_rank:          +document.getElementById('w-rank').value,
+    w_package:       +document.getElementById('w-package').value,
+    w_fees:          +document.getElementById('w-fees').value,
+    w_placement:     +document.getElementById('w-placement').value,
+    w_distance:      +document.getElementById('w-distance').value,
+    w_infra:         +document.getElementById('w-infra').value,
+  };
+  setLoading(true);
+  try {
+    const res = await fetch('/api/recommend', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data = await res.json();
+    renderResults(data);
+    toast(`Found ${data.length} colleges for you!`);
+  } catch(e) { toast('Error fetching results', 'error'); }
+  finally { setLoading(false); }
+}
+
+function verdictClass(v) {
+  const m = {'Excellent Fit':'excellent','Good Fit':'good','Fair Fit':'fair','Stretch':'stretch'};
+  return m[v]||'stretch';
+}
+function typeClass(t) {
+  if(t==='IIT') return 'iit'; if(t==='NIT') return 'nit';
+  if(t==='IIIT') return 'iiit'; if(t.includes('BITS')||t==='Deemed') return 'bits';
+  return '';
+}
+
+function renderResults(data) {
+  const el = document.getElementById('rec-results');
+  if(!data.length) { el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:3rem">No colleges found matching your profile. Try relaxing filters or checking your exam scores.</p>'; return; }
+  let html = `<div class="results-header"><div class="results-count">Showing <span>${data.length}</span> recommendations</div></div>`;
+  html += '<div class="results-grid">';
+  data.forEach((r,i) => {
+    const col = r.college;
+    const vc  = verdictClass(r.verdict);
+    const tc  = typeClass(col.type);
+    const branches = (col.branches||[]).slice(0,5).map(b=>`<span class="tag">${b}</span>`).join('');
+    const br = r.matched_branch ? `<span class="tag branch">✓ ${r.matched_branch}</span>` : '';
+    html += `
+    <div>
+      <div class="result-card ${vc}" onclick="toggleDetail('det-${i}')">
+        <div class="result-rank">${i+1}</div>
+        <div class="result-info">
+          <div class="result-name">${col.name}</div>
+          <div class="result-meta">
+            <span class="tag ${tc}">${col.type}</span>
+            <span class="tag">📍 ${col.city}</span>
+            ${br}
+            ${branches}
+          </div>
+        </div>
+        <div class="result-stats">
+          <div class="score-label">Score</div>
+          <div class="score-big">${(r.score*100).toFixed(1)}</div>
+          <div class="verdict ${vc}">${r.verdict}</div>
+        </div>
+      </div>
+      <div class="result-detail" id="det-${i}">
+        <div class="detail-grid">
+          <div class="detail-item"><div class="detail-label">NIRF Rank</div><div class="detail-value">#${col.nirf_rank}</div></div>
+          <div class="detail-item"><div class="detail-label">Avg Package</div><div class="detail-value">${col.avg_package} LPA</div></div>
+          <div class="detail-item"><div class="detail-label">Fees</div><div class="detail-value">${col.fees} Lakhs</div></div>
+          <div class="detail-item"><div class="detail-label">Placement</div><div class="detail-value">${col.placement_pct}%</div></div>
+          <div class="detail-item"><div class="detail-label">Distance</div><div class="detail-value">${r.distance_km} km</div></div>
+          <div class="detail-item"><div class="detail-label">Research Score</div><div class="detail-value">${col.research_score}/10</div></div>
+          <div class="detail-item"><div class="detail-label">Infra Score</div><div class="detail-value">${col.infra_score}/10</div></div>
+          <div class="detail-item"><div class="detail-label">State</div><div class="detail-value">${col.state}</div></div>
+        </div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function toggleDetail(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function resetForm() {
+  ['f-name','f-jeeMain','f-jeeAdv','f-bitsat','f-homeState','f-budget','f-minPkg'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('rec-results').innerHTML='';
+}
+
+async function compareColleges() {
+  const id1 = +document.getElementById('cmp-id1').value;
+  const id2 = +document.getElementById('cmp-id2').value;
+  setLoading(true);
+  try {
+    const res = await fetch('/api/compare',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id1,id2})});
+    const {c1,c2} = await res.json();
+    if(!c1||!c2){document.getElementById('cmp-result').innerHTML='<p style="color:var(--red)">Invalid selection</p>';return;}
+
+    const metrics = [
+      ['NIRF Rank', c1.nirf_rank, c2.nirf_rank, 'lower'],
+      ['Avg Package (LPA)', c1.avg_package, c2.avg_package, 'higher'],
+      ['Fees (Lakhs)', c1.fees, c2.fees, 'lower'],
+      ['Placement %', c1.placement_pct, c2.placement_pct, 'higher'],
+      ['Research Score', c1.research_score, c2.research_score, 'higher'],
+      ['Infra Score', c1.infra_score, c2.infra_score, 'higher'],
+    ];
+    let html = `<table class="compare-table"><thead><tr>
+      <th class="metric-col">Metric</th><th>${c1.name}</th><th>${c2.name}</th></tr></thead><tbody>`;
+    html += `<tr><td class="metric-col">City / State</td><td>${c1.city}, ${c1.state}</td><td>${c2.city}, ${c2.state}</td></tr>`;
+    html += `<tr><td class="metric-col">Type</td><td>${c1.type}</td><td>${c2.type}</td></tr>`;
+    html += `<tr><td class="metric-col">Branches</td><td>${(c1.branches||[]).join(', ')}</td><td>${(c2.branches||[]).join(', ')}</td></tr>`;
+    metrics.forEach(([label,v1,v2,pref])=>{
+      const w1 = pref==='lower'?(v1<=v2):(v1>=v2);
+      const w2 = !w1;
+      html+=`<tr><td class="metric-col">${label}</td>
+        <td class="${w1?'compare-winner':'compare-loser'}">${v1}${w1?' ✓':''}</td>
+        <td class="${w2?'compare-winner':'compare-loser'}">${v2}${w2?' ✓':''}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    document.getElementById('cmp-result').innerHTML = html;
+  } finally { setLoading(false); }
+}
+
+let currentSort = 'rank';
+async function loadExplore(criterion) {
+  currentSort = criterion;
+  const res  = await fetch('/api/sort?by='+criterion);
+  const data = await res.json();
+  const tbody = document.getElementById('explore-body');
+  tbody.innerHTML = data.map((col,i)=>`
+    <tr>
+      <td><span class="nirf-badge">${i+1}</span></td>
+      <td><strong>${col.name}</strong></td>
+      <td><span class="tag ${typeClass(col.type)}">${col.type}</span></td>
+      <td>${col.city}</td>
+      <td>#${col.nirf_rank}</td>
+      <td style="color:var(--green)">${col.avg_package}</td>
+      <td>${col.fees}</td>
+      <td>
+        <div class="star-bar">
+          <div class="star-fill" style="width:${col.placement_pct}px;max-width:80px"></div>
+          <span style="font-size:.75rem;margin-left:.4rem">${col.placement_pct}%</span>
+        </div>
+      </td>
+      <td style="color:var(--muted);font-size:.78rem">${(col.branches||[]).join(' · ')}</td>
+    </tr>`).join('');
+  ['rank','package','fees','placement'].forEach(s=>{
+    document.getElementById('sort-'+s).style.borderColor = s===criterion?'var(--accent)':'';
+    document.getElementById('sort-'+s).style.color = s===criterion?'var(--accent)':'';
+  });
+}
+
+async function loadCutoffs() {
+  const id  = document.getElementById('cut-college').value;
+  const ex  = document.getElementById('cut-exam').value;
+  const cat = document.getElementById('cut-cat').value;
+  const res  = await fetch(`/api/cutoffs?id=${id}&exam=${ex}&cat=${cat}`);
+  const data = await res.json();
+  if(!data||!data.branches) { document.getElementById('cutoff-result').innerHTML='<p style="color:var(--muted)">No cutoff data for this selection.</p>'; return;}
+  const branches = data.branches;
+  const keys = Object.keys(branches);
+  if(!keys.length) { document.getElementById('cutoff-result').innerHTML='<p style="color:var(--muted)">No cutoff data available for this college/exam type.</p>'; return;}
+  let html = `<div style="margin-bottom:1rem;color:var(--muted);font-size:.85rem">${data.college} — ${cat} category</div>`;
+  html += '<div class="cutoff-grid">';
+  keys.forEach(br=>{
+    const val = branches[br];
+    html += `<div class="cutoff-card">
+      <div class="cutoff-branch">${br}</div>
+      <div class="cutoff-rank">${val&&val!='N/A'?'Rank ≤ '+val.toLocaleString():'—'}</div>
+      <div class="cutoff-na">${val&&val!='N/A'?cat+' Cutoff':'Not available'}</div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('cutoff-result').innerHTML = html;
+}
+
+let allColleges = [];
+async function loadAllColleges() {
+  const res = await fetch('/api/colleges');
+  allColleges = await res.json();
+  document.getElementById('statColleges').textContent = allColleges.length;
+}
+
+let acTimeout;
+async function doAutocomplete(q) {
+  clearTimeout(acTimeout);
+  const sug = document.getElementById('suggestions');
+  if(!q||q.length<1){sug.classList.remove('open');return;}
+  acTimeout = setTimeout(async()=>{
+    const res  = await fetch('/api/autocomplete?q='+encodeURIComponent(q));
+    const data = await res.json();
+    if(!data.length){sug.classList.remove('open');return;}
+    sug.innerHTML = data.map(name=>{
+      const hl = name.replace(new RegExp(`(${q})`, 'i'), '<mark>$1</mark>');
+      return `<div class="suggestion-item" onclick="selectSuggestion('${name}')">${hl}</div>`;
+    }).join('');
+    sug.classList.add('open');
+  }, 150);
+}
+
+function selectSuggestion(name) {
+  document.getElementById('search-input').value = name;
+  document.getElementById('suggestions').classList.remove('open');
+  const col = allColleges.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  if(col) showCollegeDetail(col);
+}
+
+function showCollegeDetail(col) {
+  const branches = (col.branches||[]).map(b=>`<span class="tag">${b}</span>`).join('');
+  document.getElementById('search-detail').innerHTML = `
+    <div class="result-card ${verdictClass('')}" style="border-left:3px solid var(--accent);cursor:default;display:block;padding:1.5rem">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;align-items:center">
+        <div>
+          <div class="result-name" style="font-size:1.3rem">${col.name}</div>
+          <div class="result-meta" style="margin-top:.5rem">
+            <span class="tag ${typeClass(col.type)}">${col.type}</span>
+            <span class="tag">📍 ${col.city}, ${col.state}</span>
+            ${branches}
+          </div>
+        </div>
+        <div class="detail-grid" style="margin:0;grid-template-columns:repeat(4,1fr)">
+          <div class="detail-item"><div class="detail-label">NIRF</div><div class="detail-value">#${col.nirf_rank}</div></div>
+          <div class="detail-item"><div class="detail-label">Avg Pkg</div><div class="detail-value">${col.avg_package} LPA</div></div>
+          <div class="detail-item"><div class="detail-label">Fees</div><div class="detail-value">${col.fees} L</div></div>
+          <div class="detail-item"><div class="detail-label">Placement</div><div class="detail-value">${col.placement_pct}%</div></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('.search-wrap')) document.getElementById('suggestions').classList.remove('open');
+});
+
+async function segQuery() {
+  const l = +document.getElementById('seg-l').value;
+  const r = +document.getElementById('seg-r').value;
+  const res  = await fetch('/api/sort?by=fees');
+  const data = await res.json();
+  const slice = data.slice(l, r+1);
+  if(!slice.length){document.getElementById('seg-result').innerHTML='<p style="color:var(--red)">Invalid range</p>';return;}
+  const cheapest = slice.reduce((a,b)=>a.fees<b.fees?a:b);
+  document.getElementById('seg-result').innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--accent);border-radius:10px;padding:1rem;display:inline-block;margin-top:.5rem">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.25rem">Cheapest in index [${l}, ${r}]</div>
+      <div style="font-family:var(--font-display);font-size:1.8rem;color:var(--accent)">${cheapest.name}</div>
+      <div style="font-family:var(--font-mono);color:var(--green)">${cheapest.fees} Lakhs</div>
+    </div>`;
+}
+loadAllColleges();
+</script>
+</body>
+</html>
